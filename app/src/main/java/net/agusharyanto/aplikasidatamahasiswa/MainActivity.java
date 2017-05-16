@@ -1,5 +1,6 @@
 package net.agusharyanto.aplikasidatamahasiswa;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,13 +22,15 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase db;
 
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        context = MainActivity.this;
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
 
         listViewMahasiswa = (ListView) findViewById(R.id.listViewMahasiswa);
 
-        databaseHelper = new DatabaseHelper(this);
+        databaseHelper = new DatabaseHelper(context);
         db = databaseHelper.getWritableDatabase();
         mahasiswaArrayList = databaseHelper.getDataMahasiswa(db);
-        mahasiswaArrayAdapter = new MahasiswaArrayAdapter(this, R.layout.row_mahasiswa, mahasiswaArrayList);
+        mahasiswaArrayAdapter = new MahasiswaArrayAdapter(context, R.layout.row_mahasiswa, mahasiswaArrayList);
         listViewMahasiswa.setAdapter(mahasiswaArrayAdapter);
     }
 
