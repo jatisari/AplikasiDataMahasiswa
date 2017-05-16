@@ -1,10 +1,12 @@
 package net.agusharyanto.aplikasidatamahasiswa;
 
+import java.io.Serializable;
+
 /**
  * Created by agus on 5/16/17.
  */
 
-public class Mahasiswa {
+public class Mahasiswa implements Serializable{
 
     private String id="";
     private String nim="";
@@ -44,4 +46,13 @@ public class Mahasiswa {
         this.jurusan = jurusan;
     }
 
+    @Override
+    public String toString() {
+        return "Mahasiswa{" +
+                "id='" + id + '\'' +
+                ", nim='" + nim + '\'' +
+                ", nama='" + nama + '\'' +
+                ", jurusan='" + jurusan + '\'' +
+                '}';
+    }
 }

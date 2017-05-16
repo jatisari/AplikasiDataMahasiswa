@@ -89,6 +89,35 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return mahasiswa;
     }
 
+    public long updateMahasiswa(Mahasiswa mahasiswa, SQLiteDatabase db) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(FIELD_NIM, mahasiswa.getNim());
+        initialValues.put(FIELD_NAMA, mahasiswa.getNama());
+        initialValues.put(FIELD_JURUSAN, mahasiswa.getJurusan());
+        long rowaffect = db.update(MAHASISWA_TABLE,
+                initialValues, FIELD_ID + "=" + mahasiswa.getId(),
+                null);
+        return rowaffect;
+    }
+
+    public long insertMahasiswa(Mahasiswa mahasiswa, SQLiteDatabase db) {
+        ContentValues initialValues = new
+                ContentValues();
+        initialValues.put(FIELD_NIM, mahasiswa.getNim());
+        initialValues.put(FIELD_NAMA, mahasiswa.getNama());
+        initialValues.put(FIELD_JURUSAN, mahasiswa.getJurusan());
+        long insertId = db.insert(MAHASISWA_TABLE, null, initialValues);
+        return insertId;
+    }
+
+    public void deleteMahasiswa(Mahasiswa mahasiswa, SQLiteDatabase db) {
+        String id = mahasiswa.getId();
+        System.out.println("Comment deleted with id: " + id);
+        db.delete(MAHASISWA_TABLE, FIELD_ID
+                + " = " + id, null);
+
+
+    }
 
 
     @Override
