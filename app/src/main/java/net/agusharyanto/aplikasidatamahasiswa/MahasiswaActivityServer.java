@@ -3,7 +3,6 @@ package net.agusharyanto.aplikasidatamahasiswa;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -35,8 +34,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
     private EditText editTextNIM, editTextNama, editTextJurusan;
     private Button buttonSave, buttonHapus;
     private Mahasiswa mahasiswa;
-    private DatabaseHelper databaseHelper;
-    private SQLiteDatabase db;
+
     private String action_flag="add";
     private String refreshFlag="0";
     private static final String TAG="MahasiswaActivity";
@@ -59,8 +57,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
 
             }
         });
-        databaseHelper = new DatabaseHelper(this);
-        db = databaseHelper.getWritableDatabase();
+
         initUI();
         Intent intent = getIntent();
         if (intent.hasExtra("mahasiswa")) {
