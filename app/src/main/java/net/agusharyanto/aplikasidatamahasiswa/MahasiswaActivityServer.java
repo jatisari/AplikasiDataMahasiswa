@@ -55,7 +55,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveData();
+                saveDataVolley();
 
             }
         });
@@ -88,7 +88,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
         editTextJurusan = (EditText) findViewById(R.id.editTextJurusan);
 
     }
-
+/*
     private void saveData() {
         String nama = editTextNama.getText().toString();
         String nim = editTextNIM.getText().toString();
@@ -110,7 +110,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
             Toast.makeText(getBaseContext(), "Save Data Gagal", Toast.LENGTH_SHORT).show();
         }
 
-    }
+    }*/
 
     private void saveDataVolley(){
         refreshFlag="1";
@@ -186,16 +186,55 @@ public class MahasiswaActivityServer extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        databaseHelper.deleteMahasiswa(mahasiswa, db);
-                        // hapusDataServer();
+                       // databaseHelper.deleteMahasiswa(mahasiswa, db);
+                         hapusDataServer();
                         refreshFlag = "1";
-                        finish();
+                       // finish();
                     }
                 })
                 .setNegativeButton(android.R.string.no, null).show();
 
     }
+    private void hapusDataServer(){
+        refreshFlag="1";
+        String url = GlobalVar.IP_SERVER+"/mahasiswa/deletedata.php";
+        pDialog.setMessage("Hapus Data Mahaiswa...");
+        showDialog();
 
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        hideDialog();
+                        Log.d("ViewActivity", "response :" + response);
+                        Toast.makeText(getBaseContext(),"Hapus Data "+response, Toast.LENGTH_SHORT).show();
+                        //processResponse(response);
+                        finish();
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        hideDialog();
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<>();
+                // the POST parameters:
+                params.put("id",mahasiswa.getId());
+
+                return params;
+            }
+        };
+        Volley.newRequestQueue(this).add(postRequest);
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -213,7 +252,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
-            saveData();
+            saveDataVolley();
             return true;
         }else  if (id == R.id.action_delete) {
             hapusData();
