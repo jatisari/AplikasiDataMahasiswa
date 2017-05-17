@@ -190,6 +190,7 @@ public class MahasiswaActivityServer extends AppCompatActivity {
                          hapusDataServer();
                         refreshFlag = "1";
                        // finish();
+
                     }
                 })
                 .setNegativeButton(android.R.string.no, null).show();
