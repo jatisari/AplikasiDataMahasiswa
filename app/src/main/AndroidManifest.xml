@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MahasiswaActivity"
+            android:name=".MahasiswaActivityServer"
             android:label="@string/title_activity_mahasiswa"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
