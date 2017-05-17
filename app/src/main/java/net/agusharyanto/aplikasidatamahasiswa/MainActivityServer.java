@@ -3,7 +3,6 @@ package net.agusharyanto.aplikasidatamahasiswa;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +22,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +38,7 @@ public class MainActivityServer extends AppCompatActivity {
 
     private ArrayList<Mahasiswa> mahasiswaArrayList = new ArrayList<Mahasiswa>();
     private MahasiswaArrayAdapter mahasiswaArrayAdapter;
-    private DatabaseHelper databaseHelper;
-    private SQLiteDatabase db;
+
     private static  final int REQUEST_CODE_ADD =1;
     private static  final int REQUEST_CODE_EDIT =2;
 
@@ -67,9 +69,7 @@ public class MainActivityServer extends AppCompatActivity {
         listViewMahasiswa = (ListView) findViewById(R.id.listViewMahasiswa);
         buttonTambahData = (Button) findViewById(R.id.buttonTambah);
 
-        databaseHelper = new DatabaseHelper(context);
-        db = databaseHelper.getWritableDatabase();
-        mahasiswaArrayList = databaseHelper.getDataMahasiswa(db);
+
         loadDataServerVolley();
         gambarDatakeListView();
 
@@ -94,8 +94,8 @@ public class MainActivityServer extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("tag","response:"+response);
                         hideDialog();
-                       /// processResponse(response);
-                       // gambarDatakeListView();
+                        processResponse(response);
+                       gambarDatakeListView();
 
                     }
                 },
@@ -119,7 +119,32 @@ public class MainActivityServer extends AppCompatActivity {
         Volley.newRequestQueue(this).add(postRequest);
     }
 
+    private void processResponse(String response){
 
+        try {
+            JSONObject jsonObj = new JSONObject(response);
+            JSONArray jsonArray = jsonObj.getJSONArray("data");
+            Log.d("TAG", "data length: " + jsonArray.length());
+            Mahasiswa objectmahasiswa = null;
+            mahasiswaArrayList.clear();
+            for(int i = 0; i < jsonArray.length(); i++){
+                JSONObject obj = jsonArray.getJSONObject(i);
+                objectmahasiswa= new Mahasiswa();
+                objectmahasiswa.setId(obj.getString("id"));
+
+                objectmahasiswa.setNama(obj.getString("nama"));
+                objectmahasiswa.setNim(obj.getString("nim"));
+                objectmahasiswa.setJurusan(obj.getString("jurusan"));
+
+
+                mahasiswaArrayList.add(objectmahasiswa);
+            }
+
+        } catch (JSONException e) {
+            Log.d("MainActivity", "errorJSON");
+        }
+
+    }
     private  void gambarDatakeListView(){
         mahasiswaArrayAdapter = new MahasiswaArrayAdapter(context, R.layout.row_mahasiswa, mahasiswaArrayList);
         listViewMahasiswa.setAdapter(mahasiswaArrayAdapter);
@@ -172,7 +197,7 @@ public class MainActivityServer extends AppCompatActivity {
             case REQUEST_CODE_ADD: {
                 if (resultCode == RESULT_OK && null != data) {
                     if (data.getStringExtra("refreshflag").equals("1")) {
-                        mahasiswaArrayList = databaseHelper.getDataMahasiswa(db);
+                       loadDataServerVolley();
                         gambarDatakeListView();
                     }
                 }
@@ -181,7 +206,7 @@ public class MainActivityServer extends AppCompatActivity {
             case REQUEST_CODE_EDIT: {
                 if (resultCode == RESULT_OK && null != data) {
                     if (data.getStringExtra("refreshflag").equals("1")) {
-                        mahasiswaArrayList = databaseHelper.getDataMahasiswa(db);
+                        loadDataServerVolley();
                         gambarDatakeListView();
                     }
                 }
