@@ -22,6 +22,7 @@ public class MainActivityServer extends AppCompatActivity {
     private ListView listViewMahasiswa;
     private Button buttonTambahData;
 
+
     private ArrayList<Mahasiswa> mahasiswaArrayList = new ArrayList<Mahasiswa>();
     private MahasiswaArrayAdapter mahasiswaArrayAdapter;
     private DatabaseHelper databaseHelper;
