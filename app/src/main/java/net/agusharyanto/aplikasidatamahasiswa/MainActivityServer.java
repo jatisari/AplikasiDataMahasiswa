@@ -1,5 +1,6 @@
 package net.agusharyanto.aplikasidatamahasiswa;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,7 +17,15 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivityServer extends AppCompatActivity {
 
@@ -29,6 +39,9 @@ public class MainActivityServer extends AppCompatActivity {
     private SQLiteDatabase db;
     private static  final int REQUEST_CODE_ADD =1;
     private static  final int REQUEST_CODE_EDIT =2;
+
+    private ProgressDialog pDialog;
+
 
 
     private Context context;
@@ -49,12 +62,15 @@ public class MainActivityServer extends AppCompatActivity {
             }
         });
 
+        pDialog = new ProgressDialog(MainActivityServer.this);
+
         listViewMahasiswa = (ListView) findViewById(R.id.listViewMahasiswa);
         buttonTambahData = (Button) findViewById(R.id.buttonTambah);
 
         databaseHelper = new DatabaseHelper(context);
         db = databaseHelper.getWritableDatabase();
         mahasiswaArrayList = databaseHelper.getDataMahasiswa(db);
+        loadDataServerVolley();
         gambarDatakeListView();
 
         buttonTambahData.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +81,44 @@ public class MainActivityServer extends AppCompatActivity {
         });
 
     }
+
+    private void loadDataServerVolley(){
+
+        String url = GlobalVar.IP_SERVER+"/mahasiswa/listdata.php";
+        pDialog.setMessage("Retieve Data Mahasiswa...");
+        showDialog();
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("tag","response:"+response);
+                        hideDialog();
+                       /// processResponse(response);
+                       // gambarDatakeListView();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        hideDialog();
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<>();
+                // the POST parameters:
+                //params.put("nim","1002");
+                return params;
+            }
+        };
+        Volley.newRequestQueue(this).add(postRequest);
+    }
+
 
     private  void gambarDatakeListView(){
         mahasiswaArrayAdapter = new MahasiswaArrayAdapter(context, R.layout.row_mahasiswa, mahasiswaArrayList);
@@ -134,5 +188,15 @@ public class MainActivityServer extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
     }
 }
